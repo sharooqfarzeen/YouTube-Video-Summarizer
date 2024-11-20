@@ -1,0 +1,4 @@
+youtube-transcripts-api
+google-generativeai
+streamlit
+python

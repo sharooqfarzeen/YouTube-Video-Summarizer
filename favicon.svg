@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Red YouTube-style play button -->
+  <polygon points="10,10 90,50 10,90" fill="red" />
+  
+  <!-- White bold 'S' -->
+  <text x="18" y="70" font-family="Arial, sans-serif" font-size="50" font-weight="bold" fill="white">S</text>
+</svg>
