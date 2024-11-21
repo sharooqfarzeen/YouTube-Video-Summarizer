@@ -3,12 +3,40 @@ import io
 import streamlit as st
 from PIL import Image
 
+import os
+from dotenv import load_dotenv
+
 # Required modules
 from video_handler import VideoHandler # Handles URL validity check, video id extraction and transcription
-from summarize import get_response # Handles LLM
+from summarize import get_response, start_chat_session # Handles LLM
 
 # Page title
 st.set_page_config(page_title="YouTube Video Summarizer", page_icon="favicon.svg")
+
+# Function to get api key from user if not already set
+@st.dialog("Enter Your API Key")
+def get_api():
+    api_key = st.text_input("Google Gemini API Key", type="password", help="Your API key remains secure and is not saved.")
+    if st.button("Submit"):
+        if api_key:
+            st.session_state["GOOGLE_API_KEY"] = api_key
+            st.success("API key set successfully!")
+            st.rerun()
+        else:
+            st.error("API key cannot be empty.")
+    st.markdown("[Create your Gemini API Key](https://aistudio.google.com/apikey)", unsafe_allow_html=True)
+
+# Loading API Keys
+load_dotenv()
+
+# Check if the API key is set
+if "GOOGLE_API_KEY" not in st.session_state:
+    if "GOOGLE_API_KEY" not in os.environ:
+        get_api()
+    else:
+        st.session_state["GOOGLE_API_KEY"] = os.environ["GOOGLE_API_KEY"]
+    st.session_state["chat_session"] = start_chat_session()
+
 
 # Loading App Icon
 icon_svg = open("icon.svg").read()
@@ -115,7 +143,7 @@ def show_summary(url):
                 prompt.append(video.transcript)
                 with st.spinner("Summarizing..."):
                     # Streaming summary from model and writing it to UI
-                    response = st.chat_message("assistant").write_stream(get_response(prompt))
+                    response = st.chat_message("assistant").write_stream(get_response(prompt, st.session_state["chat_session"]))
                 # Adding response to chat history
                 st.session_state.chat_history.append({"role": "assistant", "content": response})
 
@@ -136,7 +164,7 @@ if text:
             write(message=text, role="user")
             with st.spinner("Fetching response..."):
                 # Streaming response from model and writing it to UI
-                response = st.chat_message("assistant").write_stream(get_response(text))
+                response = st.chat_message("assistant").write_stream(get_response(text, st.session_state["chat_session"]))
             # Adding response to chat history
             st.session_state.chat_history.append({"role": "assistant", "content": response})
         
