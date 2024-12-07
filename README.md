@@ -1,4 +1,4 @@
-## [Try the app on streamlit](https://yt-video-summarizer-app.streamlit.app/)
+## [Try the app on Streamlit](https://yt-video-summarizer-app.streamlit.app/)
 
 **OR**
 
